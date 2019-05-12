@@ -26,7 +26,7 @@
             //declare tooltip variable here
             
             //setup x and y scales
-            const xScale = d3.scaleLinear()
+            const xScale = d3.scaleTime()
             .domain([d3.min(data, d => (yyyyDate(d.Year))), d3.max(data, d => (yyyyDate(d.Year)))])
             .range([padding, w - padding]);
             
@@ -59,6 +59,7 @@
 
             //insert xAxis 
             const xAxis = d3.axisBottom(xScale)
+            //.ticks(d3.timeYear.every(1), d3.timeFormat("%Y"));
             .tickFormat(d3.timeFormat("%Y"));
 
             graph.append("g")
@@ -93,7 +94,7 @@
             //test logs
             console.log(data);
             console.log("data[0].Time: " + data[0].Time + " As a date: " + mmssDate(data[0].Time));
-            
+            console.log("New Date: " + new Date (800,000,000,000));
         });
     </script>
     
