@@ -10,13 +10,94 @@
 </head>
 <body>
     <script>
-        d3.json("https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/cyclist-data.json",
-        function(err, data){
-            //enter code here
-            console.log(data[0]);
+        d3.json("https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/cyclist-data.json")
+        .then(function(data){
+
+            //declare  variables
+            const w = 900;
+            const h = 500;
+            const padding = 50;
+            const titleLen = 300;
+
+
+            const mmssDate = d3.timeParse("%M:%S");
+            const yyyyDate = d3.timeParse("%Y");
+
+            //declare tooltip variable here
+            
+            //setup x and y scales
+            const xScale = d3.scaleLinear()
+            .domain([d3.min(data, d => (yyyyDate(d.Year))), d3.max(data, d => (yyyyDate(d.Year)))])
+            .range([padding, w - padding]);
+            
+            console.log("d3.min(data, d => d.Year): " + d3.min(data, d => yyyyDate(d.Year)));
+            console.log("d3.max(data, d => d.Year: " + d3.max(data, d => yyyyDate(d.Year)));
+            console.log("xScale(2000): " + xScale(yyyyDate(2000)));
+            
+            const yScale = d3.yScale = d3.scaleLinear()
+            .domain([d3.max(data, d => mmssDate(d.Time)), d3.min(data, d => mmssDate(d.Time))])
+            .range([padding, h - padding]);
+            
+            console.log(yScale(mmssDate("39:00")));
+            
+            
+            //build graph
+            const graph = d3.select("figure")
+            .append("svg")
+            .attr("height", h)
+            .attr("width", w);
+
+            //graph title
+            graph.append("text")
+            .attr("textLength", titleLen)
+            .attr("lengthAdjust", "spacingAndGlyphs")
+            .attr("id", "title")
+            .attr('x', (w - titleLen)/2)
+            .attr('y', 20)
+            //change title text below here
+            .text("To Dope or Not to Dope, the climb to the top!");
+
+            //insert xAxis 
+            const xAxis = d3.axisBottom(xScale)
+            .tickFormat(d3.timeFormat("%Y"));
+
+            graph.append("g")
+            .attr("id", "x-axis")
+            .attr("transform", "translate(" + 0 + ", " + (h - padding) + ")")
+            .call(xAxis);
+
+            //insert yAxis
+            const yAxis = d3.axisLeft(yScale)
+            .tickFormat(d3.timeFormat("%M:%S"));
+
+            graph.append("g")
+            .attr("id", "y-axis")
+            .attr("transform", "translate(" + padding + ", " + 0 + ")")
+            .call(yAxis);
+
+            //add data dots
+            graph.selectAll("circle")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", d => xScale((yyyyDate(d.Year))))
+            .attr("cy", d => yScale(mmssDate(d.Time)))
+            .attr("r", 5)
+            .attr("class", "dot")
+            .attr("data-xvalue", d => yyyyDate(d.Year))
+            .attr("data-yvalue", d => mmssDate(d.Time));
+
+
+            
+            
+            //test logs
+            console.log(data);
+            console.log("data[0].Time: " + data[0].Time + " As a date: " + mmssDate(data[0].Time));
+            
         });
     </script>
-
+    
+    
     <figure></figure>
     
     <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
