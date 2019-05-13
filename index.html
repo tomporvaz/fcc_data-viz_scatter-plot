@@ -12,17 +12,17 @@
     <script>
         d3.json("https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/cyclist-data.json")
         .then(function(data){
-
+            
             //declare  variables
             const w = 900;
             const h = 500;
             const padding = 50;
             const titleLen = 300;
-
-
+            
+            
             const mmssDate = d3.timeParse("%M:%S");
             const yyyyDate = d3.timeParse("%Y");
-
+            
             //declare tooltip variable here
             
             //setup x and y scales
@@ -30,15 +30,11 @@
             .domain([d3.min(data, d => (yyyyDate(d.Year))), d3.max(data, d => (yyyyDate(d.Year)))])
             .range([padding, w - padding]);
             
-            console.log("d3.min(data, d => d.Year): " + d3.min(data, d => yyyyDate(d.Year)));
-            console.log("d3.max(data, d => d.Year: " + d3.max(data, d => yyyyDate(d.Year)));
-            console.log("xScale(2000): " + xScale(yyyyDate(2000)));
             
             const yScale = d3.yScale = d3.scaleLinear()
             .domain([d3.max(data, d => mmssDate(d.Time)), d3.min(data, d => mmssDate(d.Time))])
             .range([padding, h - padding]);
             
-            console.log(yScale(mmssDate("39:00")));
             
             
             //build graph
@@ -46,7 +42,7 @@
             .append("svg")
             .attr("height", h)
             .attr("width", w);
-
+            
             //graph title
             graph.append("text")
             .attr("textLength", titleLen)
@@ -56,26 +52,26 @@
             .attr('y', 20)
             //change title text below here
             .text("To Dope or Not to Dope, the climb to the top!");
-
+            
             //insert xAxis 
             const xAxis = d3.axisBottom(xScale)
             //.ticks(d3.timeYear.every(1), d3.timeFormat("%Y"));
             .tickFormat(d3.timeFormat("%Y"));
-
+            
             graph.append("g")
             .attr("id", "x-axis")
             .attr("transform", "translate(" + 0 + ", " + (h - padding) + ")")
             .call(xAxis);
-
+            
             //insert yAxis
             const yAxis = d3.axisLeft(yScale)
             .tickFormat(d3.timeFormat("%M:%S"));
-
+            
             graph.append("g")
             .attr("id", "y-axis")
             .attr("transform", "translate(" + padding + ", " + 0 + ")")
             .call(yAxis);
-
+            
             //add data dots
             graph.selectAll("circle")
             .data(data)
@@ -91,49 +87,69 @@
                 if(d.Doping){
                     return "#474746";
                 } else {return "#ff7700"}
-            } );
-
-            //add legend
-
-
-            const legend = graph.append("g")
-            .attr("id", "legend")
-            .append("text")
-            .text("Dope")
-            .attr("x", 700)
-            .attr("y", 300);
-
-            graph
-            .append("text")
-            .text("No Dope")
-            .attr("x", 700)
-            .attr("y", 320);
-
-            graph.append("circle")
-            .attr("cx", 690)
-            .attr("cy", 295)
-            .attr("r", 5)
-            .attr("fill", "#474746");
-
-            graph.append("circle")
-            .attr("cx", 690)
-            .attr("cy", 315)
-            .attr("r", 5)
-            .attr("fill", "#ff7700");
-
-
+            } )
+            .on("mouseover", showTip)
+            .on("mousemove", d => moveTip(d))
+            .on("mouseout", hideTip);;
+            
+            //tooltip declaration and functions copied and modifired from https://bl.ocks.org/mbostock/1087001
+            let tooltip = d3.select("body")
+            .append("div")
+            .attr("id", "tooltip")
+            .style("display", "none");
             
             
-            //test logs
-            console.log(data);
-            console.log("data[0].Time: " + data[0].Time + " As a date: " + mmssDate(data[0].Time));
-            console.log("New Date: " + new Date (800,000,000,000));
-        });
-    </script>
-    
-    
-    <figure></figure>
-    
-    <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
-</body>
-</html>
+            function showTip() {
+                tooltip.style("display", "inline");
+            }
+            
+            function moveTip(data) {
+                tooltip.text("Name: " + data.Name + "\n Time: " + data.Time)
+                .attr("data-year", yyyyDate(data.Year))
+                .style("left", (d3.event.pageX + 5) + "px")
+                .style("top", (d3.event.pageY - 20) + "px");
+            }
+            
+            function hideTip() {
+                tooltip.style("display", "none");
+            };
+                
+                //add legend      
+                const legend = graph.append("g")
+                .attr("id", "legend")
+                .append("text")
+                .text("Dope")
+                .attr("x", 700)
+                .attr("y", 300);
+                
+                graph
+                .append("text")
+                .text("No Dope")
+                .attr("x", 700)
+                .attr("y", 320);
+                
+                graph.append("circle")
+                .attr("cx", 690)
+                .attr("cy", 295)
+                .attr("r", 5)
+                .attr("fill", "#474746");
+                
+                graph.append("circle")
+                .attr("cx", 690)
+                .attr("cy", 315)
+                .attr("r", 5)
+                .attr("fill", "#ff7700");
+                
+                
+                
+                
+
+            });
+        </script>
+        
+        
+        <figure></figure>
+        
+        <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+    </body>
+    </html>
