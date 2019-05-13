@@ -86,7 +86,40 @@
             .attr("r", 5)
             .attr("class", "dot")
             .attr("data-xvalue", d => yyyyDate(d.Year))
-            .attr("data-yvalue", d => mmssDate(d.Time));
+            .attr("data-yvalue", d => mmssDate(d.Time))
+            .attr("fill", (d) => {
+                if(d.Doping){
+                    return "#474746";
+                } else {return "#ff7700"}
+            } );
+
+            //add legend
+
+
+            const legend = graph.append("g")
+            .attr("id", "legend")
+            .append("text")
+            .text("Dope")
+            .attr("x", 700)
+            .attr("y", 300);
+
+            graph
+            .append("text")
+            .text("No Dope")
+            .attr("x", 700)
+            .attr("y", 320);
+
+            graph.append("circle")
+            .attr("cx", 690)
+            .attr("cy", 295)
+            .attr("r", 5)
+            .attr("fill", "#474746");
+
+            graph.append("circle")
+            .attr("cx", 690)
+            .attr("cy", 315)
+            .attr("r", 5)
+            .attr("fill", "#ff7700");
 
 
             
